@@ -1,0 +1,10 @@
+{
+  # VOLTTRON config files are JSON with support for python style comments.
+  "setting1": 2, #Integers
+  "setting2": ["devices/acquisition/loads/building3/","devices/acquisition/loads/building1/","devices/acquisition/loads/building2/","control/plc/shedding"], #strings
+  "setting3": true, #Booleans: remember that in JSON true and false are not capitalized.
+  "setting4": "/home/sanka/CENTRAL_CONTROL_UNIT/WeMo_Config.csv",
+  "setting5": 5.1, #Floating point numbers.
+  "setting6": [1,2,3,4], # Lists
+  "setting7": {"setting7a": "a", "setting7b": "b"} #Objects
+}

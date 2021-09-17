@@ -1,0 +1,7 @@
+Name,Priority,Building,cc,Consumption
+w1,1,building540,1,1000
+w2,2,building540,2,200
+w3,1,building540,2,10
+w4,3,building540,2,100
+w5,2,building540,1,200
+w6,1,building540,2,100

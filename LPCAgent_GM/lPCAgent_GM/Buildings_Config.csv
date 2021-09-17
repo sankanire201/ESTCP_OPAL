@@ -1,0 +1,16 @@
+Name,Priority,Microgrid,Building,Consumption
+Group1_1,5,Banshee_1,3,10000
+Group1_2,5,Banshee_1,3,10000
+Group1_3,5,Banshee_1,3,10000
+Group1_4,5,Banshee_1,3,10000
+Group1_5,5,Banshee_1,3,10000
+Group2_1,4,Banshee_1,3,50000
+Group2_2,4,Banshee_1,3,50000
+Group2_3,4,Banshee_1,3,50000
+Group2_4,4,Banshee_1,3,50000
+Group3_1,3,Banshee_1,3,100000
+Group3_2,3,Banshee_1,3,100000
+Group3_3,3,Banshee_1,3,100000
+Group4_1,2,Banshee_1,3,100000
+Group4_2,2,Banshee_1,3,100000
+Group5_1,1,Banshee_1,3,250000
