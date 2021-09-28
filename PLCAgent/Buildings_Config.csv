@@ -1,0 +1,13 @@
+Name,Priority,Building,cc,Consumption
+Control1,1,OPAL_RT,Building101,1500
+Control1,2,OPAL_RT,Building102,1500
+Control1,1,OPAL_RT,Building103,1500
+Control1,3,OPAL_RT,Building104,1500
+Control1,2,OPAL_RT,Building105,1500
+Control1,1,OPAL_RT,Building106,1500
+Control1,1,OPAL_RT,Building107,1500
+Control1,2,OPAL_RT,Building108,1500
+Control1,1,OPAL_RT,Building109,1500
+Control1,3,OPAL_RT,Building110,1500
+Control1,2,OPAL_RT,Building111,1500
+Control1,1,OPAL_RT,Building112,1500
