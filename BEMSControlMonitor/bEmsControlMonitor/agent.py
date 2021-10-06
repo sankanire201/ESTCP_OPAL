@@ -14,19 +14,19 @@ utils.setup_logging()
 __version__ = "0.1"
 
 
-def dataConcentrator(config_path, **kwargs):
-    """Parses the Agent configuration and returns an instance of
+def bEmsControlMonitor(config_path, **kwargs):
+    """
+    Parses the Agent configuration and returns an instance of
     the agent created using that configuration.
 
     :param config_path: Path to a configuration file.
-
     :type config_path: str
-    :returns: Dataconcentrator
-    :rtype: Dataconcentrator
+    :returns: Bemscontrolmonitor
+    :rtype: Bemscontrolmonitor
     """
     try:
         config = utils.load_config(config_path)
-    except StandardError:
+    except Exception:
         config = {}
 
     if not config:
@@ -35,19 +35,16 @@ def dataConcentrator(config_path, **kwargs):
     setting1 = int(config.get('setting1', 1))
     setting2 = config.get('setting2', "some/random/topic")
 
-    return Dataconcentrator(setting1,
-                          setting2,
-                          **kwargs)
+    return Bemscontrolmonitor(setting1, setting2, **kwargs)
 
 
-class Dataconcentrator(Agent):
+class Bemscontrolmonitor(Agent):
     """
     Document agent constructor here.
     """
 
-    def __init__(self, setting1=1, setting2="some/random/topic",
-                 **kwargs):
-        super(Dataconcentrator, self).__init__(**kwargs)
+    def __init__(self, setting1=1, setting2="some/random/topic", **kwargs):
+        super(Bemscontrolmonitor, self).__init__(**kwargs)
         _log.debug("vip_identity: " + self.core.identity)
 
         self.setting1 = setting1
@@ -56,14 +53,12 @@ class Dataconcentrator(Agent):
         self.default_config = {"setting1": setting1,
                                "setting2": setting2}
 
-
-        #Set a default configuration to ensure that self.configure is called immediately to setup
-        #the agent.
-
+        # Set a default configuration to ensure that self.configure is called immediately to setup
+        # the agent.
         self.vip.config.set_default("config", self.default_config)
-        #Hook self.configure up to changes to the configuration file "config".
+        # Hook self.configure up to changes to the configuration file "config".
         self.vip.config.subscribe(self.configure, actions=["NEW", "UPDATE"], pattern="config")
-        self.core.periodic(10,self.BEMS_rpc)
+
     def configure(self, config_name, action, contents):
         """
         Called after the Agent has connected to the message bus. If a configuration exists at startup
@@ -89,28 +84,24 @@ class Dataconcentrator(Agent):
         self._create_subscriptions(self.setting2)
 
     def _create_subscriptions(self, topic):
-        #Unsubscribe from everything.
+        """
+        Unsubscribe from all pub/sub topics and create a subscription to a topic in the configuration which triggers
+        the _handle_publish callback
+        """
         self.vip.pubsub.unsubscribe("pubsub", None, None)
 
         self.vip.pubsub.subscribe(peer='pubsub',
-                                  prefix='devices/Campus1/',
-                                  callback=self._handle_publish,all_platforms=True,)
+                                  prefix='dataconcentrator/devices/control/BEMS_4/',
+                                  callback=self._handle_publish,all_platforms=True)
 
-    def _handle_publish(self, peer, sender, bus, topic, headers,
-                                Message):
-        temp1=topic.split("devices")
-        topic2="devices/dataconcentrator/Monitor"+temp1[1]
-        self.vip.pubsub.publish('pubsub',topic2, message=Message)
-        print("ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",topic2)
-
-    def BEMS_rpc(self):
-        print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-     #   result=self.vip.rpc.call('platform.driver','set_point','fake-campus/fake-building/fake-device','ValveState',30,external_platform='BEMS_4').get(timeout=10)
-#        try:
- #         result=self.vip.rpc.call('bEmsControlMonitoragent-0.1_1','rpc_method',1,430,external_platform='BEMS_4')
- #       except :
-  #        pass
-
+    def _handle_publish(self, peer, sender, bus, topic, headers, message):
+        """
+        Callback triggered by the subscription setup using the topic from the agent's config file
+        
+        """
+        result=self.vip.rpc.call('platform.driver','set_point','Campus1/Benshee1/BEMS_4' ,'To_Building_P',message).get(timeout=20)
+        print(result,"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ return @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",message)
+        pass
 
     @Core.receiver("onstart")
     def onstart(self, sender, **kwargs):
@@ -122,11 +113,11 @@ class Dataconcentrator(Agent):
 
         Usually not needed if using the configuration store.
         """
-        #Example publish to pubsub
-        #self.vip.pubsub.publish('pubsub', "some/random/topic", message="HI!")
+        # Example publish to pubsub
+        self.vip.pubsub.publish('pubsub', "some/random/topic", message="HI!")
 
-        #Exmaple RPC call
-        #self.vip.rpc.call("some_agent", "some_method", arg1, arg2)
+        # Example RPC call
+        # self.vip.rpc.call("some_agent", "some_method", arg1, arg2)
         pass
 
     @Core.receiver("onstop")
@@ -138,22 +129,18 @@ class Dataconcentrator(Agent):
         pass
 
     @RPC.export
-    def rpc_BEMS_Control(self,Agent,Topic,Point,Message,BEMS, kwarg1=None, kwarg2=None):
+    def rpc_method(self, arg1, arg2, kwarg1=None, kwarg2=None):
         """
         RPC method
 
-        May be called from another agent via self.core.rpc.call """
-        ##result=self.vip.rpc.call('platform.driver','set_point',Topic,Point,Message,external_platform=BEMS)
-#        result=self.vip.rpc.call('platform.driver','set_point','fake-campus/fake-building/fake-device','SampleWritableShort1',30,external_platform='BEMS_4').get(timeout=10)
-       # self.BEMS_rpc() 
-        result=4
-        print('##############################################',result)
-     #   'BEMS_4' 'dataConcentratoragent-0.1_1'
-        return result
+        May be called from another agent via self.core.rpc.call
+        """
+        return self.setting1 + arg1 - arg2
+
 
 def main():
     """Main method called to start the agent."""
-    utils.vip_main(dataConcentrator, 
+    utils.vip_main(bEmsControlMonitor, 
                    version=__version__)
 
 

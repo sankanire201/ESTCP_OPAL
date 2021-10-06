@@ -65,7 +65,7 @@ class Peakshaveragent(Agent):
         self.vip.config.set_default("config", self.default_config)
         #Hook self.configure up to changes to the configuration file "config".
         self.vip.config.subscribe(self.configure, actions=["NEW", "UPDATE"], pattern="config")
-        self.core.periodic(10,self.PeakShaver)
+        self.core.periodic(5,self.PeakShaver)
                  
 
 
@@ -99,7 +99,7 @@ class Peakshaveragent(Agent):
 
         self.vip.pubsub.subscribe(peer='pubsub',
                                   prefix=topic,
-                                  callback=self._handle_publish)
+                                  callback=self._handle_publish,all_platforms=True)
 
     def _handle_publish(self, peer, sender, bus, topic, headers,
                                 message):
@@ -116,7 +116,7 @@ class Peakshaveragent(Agent):
         if x>0:
             print("***********************got it******************GAMS",message)
             result=self.vip.rpc.call('lPCBAgentagent-0.1_1','direct_load_control', message[0:-1])
-           # self.Peakshaverthreashhold=message[-1]
+            self.Peakshaverthreashhold=message[-1]
             #print("***********************got it******************",self.Peakshaverthreashhold)
 
 
@@ -143,10 +143,15 @@ class Peakshaveragent(Agent):
             
            topics='control/plc/shedding'
            result = self.vip.pubsub.publish(peer='pubsub',topic=topics,message=shedding)
-           print("PShaver_Start shedding*************************",shedding)
-           
+           print("PShaver_Start shedding*************************",shedding,self.Peakshaverthreashhold)
+        if shedding <-500:
+            
+           topics='control/plc/increment'
+           result = self.vip.pubsub.publish(peer='pubsub',topic=topics,message=abs(shedding))
+           print("PShaver_Start increment*************************",abs(shedding),self.Peakshaverthreashhold)
+
         else:
-            print("nothing to shed*************************",shedding)
+            print("nothing to shed*************************",shedding,self.Peakshaverthreashhold)
 
     @Core.receiver("onstop")
     def onstop(self, sender, **kwargs):

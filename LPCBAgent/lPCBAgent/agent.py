@@ -198,7 +198,7 @@ class Lpcbagent(Agent):
 
         self.vip.pubsub.subscribe(peer='pubsub',
                                   prefix=topic,
-                                  callback=self._handle_publish)
+                                  callback=self._handle_publish,all_platforms=True)
 
     def _handle_publish(self, peer, sender, bus, topic, headers,
                                 message):
@@ -471,6 +471,7 @@ class Lpcbagent(Agent):
         
         May be called from another agent via self.core.rpc.call """
         k=0
+        print('herer is the message@@@@@@@@@@@@@@@@@@',arg1)
         for y in arg1:
             k=k+1
             p='BEMS_'+str(k)
